@@ -15,7 +15,6 @@ import org.json4s.{DefaultFormats, Formats}
 import org.scalatra.json._
 
 
-
 // Defining my case class here
 case class usersTable(id: Int, fname: String, lname: String, age: Int, dob: String)
 
