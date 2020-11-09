@@ -23,8 +23,11 @@ libraryDependencies ++= Seq(
   "com.h2database"  %  "h2"                % "1.4.200",
   "ch.qos.logback"  %  "logback-classic"   % "1.2.3"
 )
-//SWAGGER
-libraryDependencies ++= Seq(  "org.scalatra" %% "scalatra-json" % "2.3.2", "org.json4s"   %% "json4s-native" % "3.2.11",)
+//MYSQL driver
+libraryDependencies += "mysql" % "mysql-connector-java" % "8.0.22" % Runtime
+
+////SWAGGER
+//libraryDependencies ++= Seq(  "org.scalatra" %% "scalatra-json" % "2.3.2", "org.json4s"   %% "json4s-native" % "3.2.11",)
 
 enablePlugins(SbtTwirl)
 enablePlugins(ScalatraPlugin)
