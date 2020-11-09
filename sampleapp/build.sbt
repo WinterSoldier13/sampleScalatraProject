@@ -26,6 +26,16 @@ libraryDependencies ++= Seq(
 //MYSQL driver
 libraryDependencies += "mysql" % "mysql-connector-java" % "8.0.22" % Runtime
 
+
+
+//FOR JSON HANDLING
+libraryDependencies += "org.scalatra" %% "scalatra-json" % "2.7.0"
+libraryDependencies += "org.json4s" %% "json4s-jackson" % "3.7.0-M7"
+
+//libraryDependencies ++=   Seq(  "org.scalatra" %% "scalatra-json" % ScalatraVersion,
+//  "org.json4s"   %% "json4s-jackson" % "3.5.2",)
+
+
 ////SWAGGER
 //libraryDependencies ++= Seq(  "org.scalatra" %% "scalatra-json" % "2.3.2", "org.json4s"   %% "json4s-native" % "3.2.11",)
 
