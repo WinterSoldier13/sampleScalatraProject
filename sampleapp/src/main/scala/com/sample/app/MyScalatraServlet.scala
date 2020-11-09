@@ -9,26 +9,33 @@ import java.sql.DriverManager
 
 import org.scalatra._
 import scala.collection.mutable.ListBuffer
-//import com.sample.app.Schemas.usersTable.usersTable
 
 //// JSON-related libraries
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra.json._
 
 
+
+// Defining my case class here
 case class usersTable(id: Int, fname: String, lname: String, age: Int, dob: String)
 
+
+
 class MyScalatraServlet extends ScalatraServlet with JacksonJsonSupport {
+    
     implicit lazy val jsonFormats: Formats = DefaultFormats
+    
     before() {
         contentType = formats("json")
     }
+    
+    
     try {
         Class.forName("com.mysql.jdbc.Driver")
         val myConn = DriverManager.getConnection("JDBC:mysql://localhost:3306/sample_db", "ayush", "password")
         val myStmt = myConn.createStatement
         
-        
+//        Get All Users
         get("/api/getUsers/") {
             val users = myStmt.executeQuery("Select * from users")
             var usersArr: ListBuffer[usersTable] = new ListBuffer[_root_.com.sample.app.usersTable]
@@ -43,10 +50,11 @@ class MyScalatraServlet extends ScalatraServlet with JacksonJsonSupport {
             for (x <- usersArr) {
                 println(x.id, x.fname, x.lname, x.age, x.dob);
             }
+//            return all Users in JSON format
             usersArr
         }
         
-        
+//        Add a new user to the database
         put("/api/create/") {
             //            GET THE JSON HERE
             var a = parsedBody.extract[usersTable]
@@ -64,7 +72,7 @@ class MyScalatraServlet extends ScalatraServlet with JacksonJsonSupport {
             println("Added to Table")
         }
         
-        
+//        update an existing user
         put("/api/update/:id") {
             val id_ = params {
                 "id"
@@ -122,12 +130,11 @@ class MyScalatraServlet extends ScalatraServlet with JacksonJsonSupport {
             
         }
         
-        
+//        delete an existing User
         delete("/api/delete/:id")
         {
             val id_ : Int = params{"id"}.toInt
-            val command = s"DELETE * FROM users WHERE id=$id_"
-            
+            val command = s"DELETE FROM users WHERE id=$id_"
             myStmt.executeUpdate(command)
             println(command)
         }
