@@ -1,6 +1,5 @@
 package com.sample.app
 
-
 import org.scalatra._
 import scala.collection.mutable.ListBuffer
 
@@ -8,11 +7,11 @@ import scala.collection.mutable.ListBuffer
 import org.json4s.{DefaultFormats, Formats}
 import org.scalatra.json._
 
+import scalikejdbc._
+
 
 // Defining my case class here
 case class UsersTable(id: Int = -1, fname: String, lname: String, age: Int, dob: String)
-
-import scalikejdbc._
 
 
 class MyScalatraServlet extends ScalatraServlet with JacksonJsonSupport {
