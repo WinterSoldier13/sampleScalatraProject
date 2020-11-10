@@ -16,8 +16,9 @@ import org.scalatra.json._
 
 
 // Defining my case class here
-case class usersTable(id: Int, fname: String, lname: String, age: Int, dob: String)
+case class UsersTable(id: Int, fname: String, lname: String, age: Int, dob: String)
 
+import scalikejdbc._
 
 
 class MyScalatraServlet extends ScalatraServlet with JacksonJsonSupport {
@@ -35,28 +36,35 @@ class MyScalatraServlet extends ScalatraServlet with JacksonJsonSupport {
         val myStmt = myConn.createStatement
         
 //        Get All Users
-        get("/api/getUsers/") {
-            val users = myStmt.executeQuery("Select * from users")
-            var usersArr: ListBuffer[usersTable] = new ListBuffer[_root_.com.sample.app.usersTable]
+        get("/api/getUsers/")
+        {
+            // initialize JDBC driver & connection pool
+            Class.forName("com.mysql.jdbc.Driver")
+            ConnectionPool.singleton("JDBC:mysql://localhost:3306/sample_db", "ayush", "password")
+    
+            // ad-hoc session provider on the REPL
+            implicit val session = AutoSession
+    
+            // for now, retrieves all data as Map value
+            val entities: List[Map[String, Any]] = sql"select * from users"
+              .map(_.toMap)
+              .list
+              .apply()
+//            Converting to right datatype because on directly returning the entities 'dob' is not being returned
+            var output : ListBuffer[Map[String, Any]] = new ListBuffer[Map[String, Any]]
             
-            while ( {
-                users.next
-            }) {
-                var temp: usersTable = usersTable(id = users.getString("id").toInt, fname = users.getString("fname"), lname = users.getString("lname"), age = users.getString("age").toInt, dob = users.getString("dob").toString)
-                usersArr += temp
-            }
-            
-            for (x <- usersArr) {
-                println(x.id, x.fname, x.lname, x.age, x.dob);
-            }
-//            return all Users in JSON format
-            usersArr
+            for(x <- entities)
+                {
+                    val temp = Map("dob" -> x("dob").toString, "fname" -> x("fname"), "lname" ->x("lname"), "age" -> x("age"), "id" -> x("id"))
+                    output += temp
+                }
+            output
         }
         
 //        Add a new user to the database
         put("/api/create/") {
             //            GET THE JSON HERE
-            var a = parsedBody.extract[usersTable]
+            var a = parsedBody.extract[UsersTable]
             
             val fname = a.fname.toString
             val lname = a.lname.toString
@@ -89,7 +97,7 @@ class MyScalatraServlet extends ScalatraServlet with JacksonJsonSupport {
             while ( {
                 users.next()
             }) {
-                val temp: usersTable = usersTable(id = id_, fname = users.getString("fname"), lname = users.getString("lname"), age = users.getString("age").toInt, dob = users.getString("dob").toString)
+                val temp: UsersTable = UsersTable(id = id_, fname = users.getString("fname"), lname = users.getString("lname"), age = users.getString("age").toInt, dob = users.getString("dob").toString)
                  initFname = temp.fname.toString;
                  initLname = temp.lname.toString;
                  initAge = temp.age.toInt;
@@ -99,7 +107,7 @@ class MyScalatraServlet extends ScalatraServlet with JacksonJsonSupport {
             
             
 //            TIME TO UPDATE
-            var receivedJSON = parsedBody.extract[usersTable]
+            var receivedJSON = parsedBody.extract[UsersTable]
             
             var newFname = initFname;
             var newLname = initLname;
