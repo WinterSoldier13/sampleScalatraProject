@@ -138,11 +138,19 @@ class MyScalatraServlet extends ScalatraServlet with JacksonJsonSupport {
                 {
                     newDOB = receivedJSON.dob;
                 }
+    
+            // initialize JDBC driver & connection pool
+            Class.forName("com.mysql.jdbc.Driver")
+            ConnectionPool.singleton("JDBC:mysql://localhost:3306/sample_db", "ayush", "password")
+    
+            // ad-hoc session provider on the REPL
+            implicit val session = AutoSession
             
-            var c :String = s"UPDATE users SET fname='$newFname', lname='$newLname', age=$newAge, dob='$newDOB' WHERE id=$id_"
-            myStmt.executeUpdate(c)
+            var c = sql"""UPDATE users SET fname=${newFname}, lname=${newLname}, age=${newAge}, dob=${newDOB} WHERE id=${id_}"""
+              .update
+              .apply()
+            
             println("UPDATED")
-            
         }
         
 //        delete an existing User
