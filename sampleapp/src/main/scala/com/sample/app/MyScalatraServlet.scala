@@ -16,7 +16,7 @@ import org.scalatra.json._
 
 
 // Defining my case class here
-case class UsersTable(id: Int, fname: String, lname: String, age: Int, dob: String)
+case class UsersTable(id: Int = -1, fname: String, lname: String, age: Int, dob: String)
 
 import scalikejdbc._
 
@@ -58,6 +58,7 @@ class MyScalatraServlet extends ScalatraServlet with JacksonJsonSupport {
                     val temp = Map("dob" -> x("dob").toString, "fname" -> x("fname"), "lname" ->x("lname"), "age" -> x("age"), "id" -> x("id"))
                     output += temp
                 }
+//          Return the list it will be automatically converted to JSON
             output
         }
         
@@ -70,10 +71,17 @@ class MyScalatraServlet extends ScalatraServlet with JacksonJsonSupport {
             val lname = a.lname.toString
             val age: Int = a.age.toInt
             val dob = a.dob.toString
+            // initialize JDBC driver & connection pool
+            Class.forName("com.mysql.jdbc.Driver")
+            ConnectionPool.singleton("JDBC:mysql://localhost:3306/sample_db", "ayush", "password")
+    
+            // ad-hoc session provider on the REPL
+            implicit val session = AutoSession
             
             println(s"RECEIVED $fname $lname $age $dob")
-            var command: String = s"INSERT INTO users(fname, lname, age, dob) VALUES ( '$fname' , '$lname' , $age , '$dob')";
-            myStmt.executeUpdate(command)
+            var command = sql"""INSERT INTO users(fname, lname, age, dob) VALUES ( ${fname} , ${lname} , ${age} , ${dob})"""
+              .update
+              .apply()
             
             //            println(command)
             println("Added to Table")
