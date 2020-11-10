@@ -1,11 +1,5 @@
 package com.sample.app
 
-import java.sql.DriverManager
-import java.sql.Connection
-import java.sql.ResultSet
-import java.sql.SQLException
-import java.sql.Statement
-import java.sql.DriverManager
 
 import org.scalatra._
 import scala.collection.mutable.ListBuffer
@@ -53,6 +47,7 @@ class MyScalatraServlet extends ScalatraServlet with JacksonJsonSupport {
             output += temp
         }
         //          Return the list it will be automatically converted to JSON
+        println("GET all users")
         output
     }
     
@@ -141,10 +136,12 @@ class MyScalatraServlet extends ScalatraServlet with JacksonJsonSupport {
         val id_ : Int = params {
             "id"
         }.toInt
+        
         val command =
             sql"""DELETE FROM users WHERE id=${id_}"""
               .update
               .apply()
+        println(s"DELETED $id_")
         
     }
 }
