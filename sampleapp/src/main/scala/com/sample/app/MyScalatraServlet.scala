@@ -51,7 +51,7 @@ class MyScalatraServlet extends ScalatraServlet with JacksonJsonSupport {
     }
     
     //        Add a new user to the database
-    put("/api/create/") {
+    post("/api/create/") {
         //            GET THE JSON HERE
         var a = parsedBody.extract[UsersTable]
         
